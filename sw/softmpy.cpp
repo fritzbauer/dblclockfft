@@ -207,8 +207,7 @@ SLASHLINE
 	fprintf(fp,
 "module	bimpy #(\n" // (i_clk, i_reset, i_ce, i_a, i_b, o_r);\n"
 		"\t\t// {{{\n"
-		"\t\tparameter\tBW=18, // Number of bits in i_b\n"
-		"\t\tlocalparam\tLUTB=2 // Number of bits in i_a for our LUT multiply\n"
+		"\t\tparameter\tBW=18 // Number of bits in i_b\n"
 		"\t\t// }}}\n"
 	"\t) (\n"
 		"\t\t// {{{\n"
@@ -218,6 +217,7 @@ SLASHLINE
 		"\t\toutput\treg\t[(BW+LUTB-1):0]	o_r\n"
 		"\t\t// }}}\n"
 	"\t);\n"
+	"\tlocalparam\tLUTB=2; // Number of bits in i_a for our LUT multiply\n"
 "\n"
 "\t// Local declarations\n"
 "\t// {{{\n"
@@ -350,17 +350,12 @@ SLASHLINE
 	fprintf(fp, "IAW");
 #endif
 
-	fprintf(fp, ",	// The width of i_b, can be anything\n"
+	fprintf(fp, "	// The width of i_b, can be anything\n"
 			"\t\t\t// The following three parameters should not be changed\n"
 			"\t\t\t// by any implementation, but are based upon hardware\n"
 			"\t\t\t// and the above values:\n"
 			"\t\t\t// OW=IAW+IBW;	// The output width\n");
 	fprintf(fp,
-	"\t\tlocalparam	AW = (IAW<IBW) ? IAW : IBW,\n"
-			"\t\t\t\tBW = (IAW<IBW) ? IBW : IAW,\n"
-			"\t\t\t\tIW=(AW+1)&(-2),	// Internal width of A\n"
-			"\t\t\t\tLUTB=2,	// How many bits to mpy at once\n"
-			"\t\t\t\tTLEN=(AW+(LUTB-1))/LUTB // Rows in our tableau\n"
 	"\t\t// }}}\n"
 	"\t) (\n"
 	"\t\t// {{{\n"
@@ -369,6 +364,7 @@ SLASHLINE
 	"\t\tinput\twire\t[(IBW-1):0]\ti_b_unsorted,\n"
 	"\t\toutput\treg\t[(AW+BW-1):0]\to_r\n"
 "\n");
+
 	if (formal_property_flag) fprintf(fp,
 "`ifdef	FORMAL\n"
 	"\t\t, output\twire\t[(IAW-1):0]\tf_past_a_unsorted,\n"
@@ -376,6 +372,12 @@ SLASHLINE
 "`endif\n");
 
 	fprintf(fp, "\t\t// }}}\n\t);\n"
+	 "\t\tlocalparam	AW = (IAW<IBW) ? IAW : IBW,\n"
+                "\t\t\t\tBW = (IAW<IBW) ? IBW : IAW,\n"
+                "\t\t\t\tIW=(AW+1)&(-2),	// Internal width of A\n"
+                "\t\t\t\tLUTB=2,	// How many bits to mpy at once\n"
+                "\t\t\t\tTLEN=(AW+(LUTB-1))/LUTB; // Rows in our tableau\n"
+    "\n"
 	"\t// Local declarations\n"
 	"\t// {{{\n"
 	"\t// Swap parameter order, so that AW <= BW -- for performance\n"

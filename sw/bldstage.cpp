@@ -384,15 +384,13 @@ SLASHLINE
 			(offset)?'o':'e', stage*2);
 	} else
 		fprintf(fstage,
-			"\t\tparameter\tCOEFFILE=\"cmem_%d.hex\",\n",
+			"\t\tparameter\tCOEFFILE=\"cmem_%d.hex\"\n",
 			stage);
 	fprintf(fstage, "\t\t// Verilator lint_on  UNUSED\n");
 
 	fprintf(fstage,"\n"
 "`ifdef	VERILATOR\n"
-	"\t\tparameter  [0:0]\tZERO_ON_IDLE = 1'b0\n"
-"`else\n"
-	"\t\tlocalparam [0:0]\tZERO_ON_IDLE = 1'b0\n"
+	"\t\t,parameter  [0:0]\tZERO_ON_IDLE = 1'b0\n"
 "`endif // VERILATOR\n"
 	"\t\t// }}}\n\t) (\n\t\t// {{{\n");
 
@@ -406,6 +404,11 @@ SLASHLINE
 	if (dbg) { fprintf(fstage, "\t\toutput\twire\t[33:0]\t\t\to_dbg\n");
 	}
 	fprintf(fstage, "\t\t// }}}\n\t);\n\n");
+
+    fprintf(fstage,"\n"
+    "`ifndef	VERILATOR\n"
+        "\t\tlocalparam [0:0]\tZERO_ON_IDLE = 1'b0;\n"
+    "`endif // VERILATOR\n");
 
 	fprintf(fstage,
 	"\t// Local signal definitions\n"

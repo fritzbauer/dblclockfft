@@ -243,7 +243,19 @@ SLASHLINE
 		"\t\t// CKPCE is the number of clocks per each i_ce.  The actual\n"
 		"\t\t// number can be more, but the algorithm depends upon at least\n"
 		"\t\t// this many for extra internal processing.\n"
-		"\t\tparameter	CKPCE=%d,\n\t\t// }}}\n", ckpce);
+		"\t\tparameter	CKPCE=%d\n\t\t// }}}\n"
+		"\t) (\n", ckpce);
+
+	fprintf(fp,
+	"\t\t// {{{\n"
+	"\t\tinput\twire\ti_clk, %s, i_ce,\n"
+	"\t\tinput\twire\t[(2*CWIDTH-1):0] i_coef,\n"
+	"\t\tinput\twire\t[(2*IWIDTH-1):0] i_left, i_right,\n"
+	"\t\tinput\twire\ti_aux,\n"
+	"\t\toutput\twire	[(2*OWIDTH-1):0] o_left, o_right,\n"
+	"\t\toutput\treg\to_aux\n"
+	"\t\t// }}}\n"
+	"\t);\n\n", resetw.c_str());
 
 	fprintf(fp,
 		"\t\t//\n"
@@ -260,13 +272,13 @@ SLASHLINE
 		"\t\t// the fewest number of bits--to keep the pipeline depth\n"
 		"\t\t// short.  So, let's find the fewest number of bits here.\n"
 		"\t\tlocalparam MXMPYBITS =\n"
-		"\t\t((IWIDTH+2)>(CWIDTH+1)) ? (CWIDTH+1) : (IWIDTH + 2),\n"
+		"\t\t((IWIDTH+2)>(CWIDTH+1)) ? (CWIDTH+1) : (IWIDTH + 2);\n"
 		"\t\t// }}}\n"
 		"\t\t// MPYDELAY\n"
 		"\t\t// {{{\n"
 		"\t\t// Given this \"fewest\" number of bits, we can calculate\n"
 		"\t\t// the number of clocks the multiply itself will take.\n"
-		"\t\tlocalparam	MPYDELAY=((MXMPYBITS+1)/2)+2,\n"
+		"\t\tlocalparam	MPYDELAY=((MXMPYBITS+1)/2)+2;\n"
 		"\t\t// }}}\n"
 		"\t\t// LCLDELAY\n"
 		"\t\t// {{{\n"
@@ -280,7 +292,7 @@ SLASHLINE
 		"\t\t// number of slower clock ticks that it takes.\n"
 		"\t\tlocalparam	LCLDELAY = (CKPCE == 1) ? MPYDELAY\n"
 		"\t\t\t: (CKPCE == 2) ? (MPYDELAY/2+2)\n"
-		"\t\t\t: (MPYDELAY/3 + 2),\n"
+		"\t\t\t: (MPYDELAY/3 + 2);\n"
 		"\t\t// }}}\n"
 		"\t\t// LGDELAY\n"
 		"\t\t// {{{\n"
@@ -289,27 +301,15 @@ SLASHLINE
 				"\t\t\t: (MPYDELAY > 16) ? 5\n"
 				"\t\t\t: (MPYDELAY >  8) ? 4\n"
 				"\t\t\t: (MPYDELAY >  4) ? 3\n"
-				"\t\t\t: 2,\n"
+				"\t\t\t: 2;\n"
 		"\t\t// }}}\n"
-	"\t\tlocalparam	AUXLEN=(LCLDELAY+3),\n"
-	"\t\tlocalparam	MPYREMAINDER = MPYDELAY - CKPCE*(MPYDELAY/CKPCE)\n"
+	"\t\tlocalparam	AUXLEN=(LCLDELAY+3);\n"
+	"\t\tlocalparam	MPYREMAINDER = MPYDELAY - CKPCE*(MPYDELAY/CKPCE);\n"
 	"\t\t// }}}\n"
-	"\t\t// }}}\n"
-	"\t) (\n");
+	"\t\t// }}}\n");
 
 	fprintf(fp,
-	"\t\t// {{{\n"
-	"\t\tinput\twire\ti_clk, %s, i_ce,\n"
-	"\t\tinput\twire\t[(2*CWIDTH-1):0] i_coef,\n"
-	"\t\tinput\twire\t[(2*IWIDTH-1):0] i_left, i_right,\n"
-	"\t\tinput\twire\ti_aux,\n"
-	"\t\toutput\twire	[(2*OWIDTH-1):0] o_left, o_right,\n"
-	"\t\toutput\treg\to_aux\n"
-	"\t\t// }}}\n"
-	"\t);\n\n", resetw.c_str());
-
-	fprintf(fp,
-	"\t// Local delcarations\n\t// {{{\n");
+	"\t// Local declarations\n\t// {{{\n");
 	if (formal_property_flag) fprintf(fp,
 "`ifdef	FORMAL\n"
 	"\t// {{{\n"
