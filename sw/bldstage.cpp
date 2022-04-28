@@ -380,7 +380,7 @@ SLASHLINE
 "\t\t// The COEFFILE parameter contains the name of the file\n"
 "\t\t// containing the FFT twiddle factors\n");
 	if (nwide == 2) {
-		fprintf(fstage, "\t\tparameter\tCOEFFILE=\"cmem_%c%d.hex\",\n",
+		fprintf(fstage, "\t\tparameter\tCOEFFILE=\"cmem_%c%d.hex\"\n",
 			(offset)?'o':'e', stage*2);
 	} else
 		fprintf(fstage,
